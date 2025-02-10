@@ -5,17 +5,16 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class CategoriesService {
-    constructor(
-        @InjectRepository(Category)
-        private categoriesRepository: Repository<Category>,
-    ) {}
+	constructor(
+		@InjectRepository(Category)
+		private categoriesRepository: Repository<Category>
+	) {}
 
-    findAll(): Promise<Category[]> {
-        return this.categoriesRepository.find();
-    }
-    
-    create(category: Partial<Category>): Promise<Category> {
-        return this.categoriesRepository.save(category);
-    }
+	findAll(): Promise<Category[]> {
+		return this.categoriesRepository.find();
+	}
 
+	create(category: Partial<Category>): Promise<Category> {
+		return this.categoriesRepository.save(category);
+	}
 }
