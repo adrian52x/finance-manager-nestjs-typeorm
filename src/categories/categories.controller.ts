@@ -4,7 +4,7 @@ import { Category } from './entity/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-catergory.dto';
 
-@Controller('categories')
+@Controller('/api/categories')
 export class CategoriesController {
 	constructor(private readonly categoriesService: CategoriesService) {}
 
