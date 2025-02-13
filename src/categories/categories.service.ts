@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { Category } from './entity/category.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -24,7 +24,7 @@ export class CategoriesService {
 		return category;
 	}
 
-	create(createCategoryDto: CreateCategoryDto): Promise<Category> {
+	async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
 		return this.categoriesRepository.save(createCategoryDto);
 	}
 
