@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { Category } from './entity/category.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-catergory.dto';
 
@@ -25,7 +25,14 @@ export class CategoriesService {
 	}
 
 	async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
-		return this.categoriesRepository.save(createCategoryDto);
+		try {
+			return await this.categoriesRepository.save(createCategoryDto);
+		} catch (error) {
+			if (error instanceof QueryFailedError && error.message.includes('duplicate key value')) {
+				throw new ConflictException('Category with this title already exists');
+			}
+			throw error;
+		}
 	}
 
 	async update(id: number, updateCategoryDto: UpdateCategoryDto): Promise<Category> {
@@ -37,11 +44,14 @@ export class CategoriesService {
 		return this.categoriesRepository.save(updatedCategory);
 	}
 
-	async remove(id: number): Promise<void> {
+	async remove(id: number): Promise<Category> {
 		const category = await this.categoriesRepository.findOneBy({ id });
 		if (!category) {
 			throw new Error('Category not found');
 		}
 		await this.categoriesRepository.remove(category);
+		console.log('Category removed', category);
+		
+		return category;
 	}
 }
