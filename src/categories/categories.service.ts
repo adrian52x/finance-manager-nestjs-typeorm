@@ -45,13 +45,23 @@ export class CategoriesService {
 	}
 
 	async remove(id: number): Promise<Category> {
-		const category = await this.categoriesRepository.findOneBy({ id });
-		if (!category) {
-			throw new Error('Category not found');
+		try {
+			const category = await this.categoriesRepository.findOneBy({ id });
+			if (!category) {
+				throw new Error('Category not found');
+			} 
+			await this.categoriesRepository.remove(category);
+			console.log('Category removed', category);
+
+			return category;
+		} catch (error) {
+			// Check if the error is a foreign key constraint violation
+			if (error instanceof QueryFailedError && error.driverError.code === '23503') {
+				throw new ConflictException('Cannot delete category with associated entries');
+			}
+
+			// Re-throw other errors
+			throw error;
 		}
-		await this.categoriesRepository.remove(category);
-		console.log('Category removed', category);
-		
-		return category;
 	}
 }
